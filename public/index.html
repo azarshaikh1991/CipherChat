@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Arzo - Login</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #e0f7fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .auth-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.2); width: 320px; text-align: center; }
+        .logo { font-size: 28px; font-weight: bold; color: #00796b; margin-bottom: 20px; }
+        input { width: 90%; padding: 12px; margin: 10px 0; border: 1px solid #ccc; border-radius: 5px; outline: none; }
+        button { width: 98%; padding: 12px; background: #00796b; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; font-weight: bold; margin-top: 10px; }
+        button:hover { background: #004d40; }
+        .toggle-btn { background: none; color: #00796b; border: none; margin-top: 15px; cursor: pointer; text-decoration: underline; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+<div class="auth-card">
+    <div class="logo">ARZO</div>
+    <h3 id="formTitle">Login to your account</h3>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button id="authBtn" onclick="handleAuth()">Login</button>
+    <button class="toggle-btn" onclick="toggleMode()" id="toggleBtn">New to Arzo? Create an account</button>
+</div>
+
+<script>
+    let isLoginMode = true;
+
+    function toggleMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('formTitle').innerText = isLoginMode ? 'Login to your account' : 'Create an Arzo account';
+        document.getElementById('authBtn').innerText = isLoginMode ? 'Login' : 'Signup';
+        document.getElementById('toggleBtn').innerText = isLoginMode ? 'New to Arzo? Create an account' : 'Already have an account? Login';
+    }
+
+    async function handleAuth() {
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value.trim();
+        const endpoint = isLoginMode ? '/api/login' : '/api/signup';
+
+        if (!username || !password) return alert('Please fill in all fields');
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+            if (isLoginMode) {
+                localStorage.setItem('token', data.token);
+                localStorage.setItem('username', data.username);
+                window.location.href = '/chat.html';
+            } else {
+                alert(data.message);
+                toggleMode();
+            }
+        } else {
+            alert(data.error);
+        }
+    }
+</script>
+
+</body>
+</html>
