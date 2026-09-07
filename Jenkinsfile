@@ -1,4 +1,44 @@
-pipeline {
+node {
+    def DOCKER_HUB_CREDS = 'docker-hub-credentials'
+    def DOCKER_HUB_USER  = 'azarr1991'
+    def IMAGE_NAME       = 'arzo-messenger'
+    def IMAGE_TAG        = "${env.BUILD_NUMBER}"
+
+    // Mac system path configuration for npm and docker commands
+    env.PATH = "/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/homebrew/bin:/Users/azarshaikh/.nvm/versions/node/v18.0.0/bin:${env.PATH}"
+
+    try {
+        stage('Checkout') {
+            checkout scm
+        }
+
+        stage('Install Dependencies') {
+            sh 'npm install'
+        }
+
+        stage('Build Docker Image') {
+            echo 'Building Arzo Image...'
+            sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ."
+            sh "docker tag ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
+        }
+
+        stage('Push to Docker Hub') {
+            withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDS, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                sh "echo \$PASS | docker login -u \$USER --password-stdin"
+                sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}"
+                sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest"
+            }
+        }
+
+        stage('Deploy Arzo') {
+            sh 'docker compose down || true'
+            sh 'docker compose up -d'
+        }
+    } finally {
+        sh "docker rmi ${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} || true"
+        echo 'Arzo App deployment pipeline finished successfully! Access it on http://localhost:3000'
+    }
+}pipeline {
     agent any
 
     environment {
