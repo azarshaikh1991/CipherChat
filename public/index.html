@@ -35,7 +35,7 @@
     </div>
 
     <!-- Chat Container -->
-    <div id="chat-container" style="display:none;">
+    <div id="chat-container">
         <div class="sidebar">
             <h3>Chats</h3>
             <div id="user-list"></div>
@@ -55,7 +55,7 @@
         let currentUser = '';
         let activeRecipient = null;
         let isSignupMode = false;
-        const messagesStore = {}; // { username: [ {sender, message, timestamp} ] }
+        const messagesStore = {}; 
 
         function toggleAuthMode() {
             isSignupMode = !isSignupMode;
@@ -138,11 +138,10 @@
 
         function selectRecipient(user) {
             activeRecipient = user;
-            document.getElementById('current-chat-title.innerText = `Chat with ${user}`;
+            document.getElementById('current-chat-title').innerText = `Chat with ${user}`;
             document.getElementById('message-input').disabled = false;
             document.getElementById('send-btn').disabled = false;
             
-            // Highlight active user
             document.querySelectorAll('.user-item').forEach(el => {
                 el.classList.toggle('active', el.innerText === user);
             });
