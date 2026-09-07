@@ -1,27 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Arzo Messenger</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <div class="container">
+    <div class="messenger-container">
+        <!-- Sidebar -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <!-- Yaha apna logo add krein -->
-                <img src="/path/to/your/logo.png" alt="Arzo Messenger Logo" class="logo">
+                <img src="/logo.png" alt="Arzo Messenger Logo" class="logo">
                 <div class="user-info">
                     <span id="current-username"></span>
-                    <button onclick="logout()">Logout</button>
+                    <button onclick="logout()" class="logout-btn">Logout</button>
                 </div>
             </div>
-            <div class="user-list">
-                <!-- User list yaha ayegi -->
+            <div class="user-list" id="user-list">
+                <!-- Dynamic user list -->
             </div>
         </div>
-        <!-- Baki chat section -->
+
+        <!-- Chat Section -->
+        <div class="chat-section" id="chat-section">
+            <div class="chat-header">
+                <h3 id="current-chat-title">Select a user to start chat</h3>
+            </div>
+            
+            <div class="chat-messages" id="chat-messages">
+                <!-- Messages will appear here -->
+            </div>
+
+            <div class="chat-input-area" id="chat-input-area" style="display: none;">
+                <!-- Image attachment button -->
+                <label for="image-input" class="upload-btn-label" title="Send Image">📎</label>
+                <input type="file" id="image-input" accept="image/*" style="display: none;" onchange="sendImage(event)">
+                
+                <input type="text" id="message-input" placeholder="Type a message...">
+                <button class="send-btn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
     </div>
+
     <script src="client.js"></script>
 </body>
 </html>
