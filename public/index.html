@@ -1,230 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arzo - Secure Messenger</title>
+    <title>Arzo Messenger</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #f0f2f5; height: 100vh; display: flex; justify-content: center; align-items: center; }
-        
-        /* Auth Card */
-        #auth-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); width: 100%; max-width: 400px; text-align: center; }
-        #auth-container h2 { margin-bottom: 20px; color: #075e54; }
-        .input-group { width: 100%; margin-bottom: 15px; }
-        .input-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; outline: none; }
-        .input-group input:focus { border-color: #075e54; }
-        .auth-btn { width: 100%; padding: 12px; background: #075e54; color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        .auth-btn:hover { background: #0b8070; }
-        .toggle-link { margin-top: 15px; font-size: 14px; color: #007bff; cursor: pointer; }
-
-        /* Chat Layout */
-        #chat-container { display: none; width: 100%; max-width: 1000px; height: 90vh; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); overflow: hidden; display: none; flex-direction: row; }
-        .sidebar { width: 32%; background: #f8f9fa; border-right: 1px solid #e9ecef; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 15px 20px; background: #075e54; color: white; font-weight: bold; display: flex; justify-content: space-between; align-items: center; }
-        .user-list { flex-grow: 1; overflow-y: auto; }
-        .user-item { padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f1f1f1; display: flex; align-items: center; transition: background 0.2s; }
-        .user-item:hover { background: #e9ecef; }
-        .user-item.active { background: #e2e8f0; font-weight: bold; }
-        
-        .chat-area { width: 68%; display: flex; flex-direction: column; background: #efeae2; }
-        .chat-header { padding: 15px 20px; background: #f0f2f5; border-bottom: 1px solid #ddd; font-weight: bold; color: #333; }
-        .messages { flex-grow: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .message { padding: 10px 14px; border-radius: 8px; max-width: 65%; word-wrap: break-word; font-size: 14px; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        .message.sent { background: #d9fdd3; align-self: flex-end; border-top-right-radius: 0; }
-        .message.received { background: white; align-self: flex-start; border-top-left-radius: 0; }
-        
-        .chat-input-area { padding: 12px 20px; background: #f0f2f5; display: flex; gap: 10px; align-items: center; }
-        .chat-input-area input { flex-grow: 1; padding: 12px; border: none; border-radius: 20px; outline: none; font-size: 14px; padding-left: 18px; }
-        .send-btn { background: #075e54; color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; display: flex; justify-content: center; align-items: center; font-size: 16px; }
-        .send-btn:hover { background: #0b8070; }
-
-        @media (max-width: 768px) {
-            #chat-container { height: 100vh; border-radius: 0; max-width: 100%; }
-            .sidebar { width: 40%; }
-            .chat-area { width: 60%; }
-        }
-    </style>
 </head>
 <body>
-
-    <!-- Auth Container -->
-    <div id="auth-container">
-        <h2 id="form-title">Arzo Messenger</h2>
-        <div class="input-group">
-            <input type="text" id="username" placeholder="Username">
-        </div>
-        <div class="input-group">
-            <input type="password" id="password" placeholder="Password">
-        </div>
-        <button class="auth-btn" onclick="handleAuth()">Login</button>
-        <p class="toggle-link" onclick="toggleAuthMode()" id="toggle-text">New to Arzo? Create an account</p>
-        <p id="auth-error" style="color:red; font-size:13px; margin-top:10px;"></p>
-    </div>
-
-    <!-- Chat Container -->
-    <div id="chat-container">
+    <div class="container">
         <div class="sidebar">
             <div class="sidebar-header">
-                <span id="current-user-display">Chats</span>
-                <span style="font-size: 12px; cursor: pointer; background: rgba(255,255,255,0.2); padding: 4px 8px; border-radius: 4px;" onclick="location.reload()">Logout</span>
+                <!-- Yaha apna logo add krein -->
+                <img src="/path/to/your/logo.png" alt="Arzo Messenger Logo" class="logo">
+                <div class="user-info">
+                    <span id="current-username"></span>
+                    <button onclick="logout()">Logout</button>
+                </div>
             </div>
-            <div class="user-list" id="user-list">
-                <p style="padding: 15px; color: #888; font-size: 13px; text-align: center;">Waiting for other users...</p>
-            </div>
-        </div>
-        <div class="chat-area">
-            <div class="chat-header" id="current-chat-title">Select a chat to start messaging</div>
-            <div class="messages" id="messages"></div>
-            <div class="chat-input-area">
-                <input type="text" id="message-input" placeholder="Type a message..." disabled>
-                <button class="send-btn" onclick="sendMessage()" id="send-btn" disabled>➤</button>
+            <div class="user-list">
+                <!-- User list yaha ayegi -->
             </div>
         </div>
+        <!-- Baki chat section -->
     </div>
-
-    <script>
-        let socket;
-        let currentUser = '';
-        let activeRecipient = null;
-        let isSignupMode = false;
-        const messagesStore = {}; 
-
-        function toggleAuthMode() {
-            isSignupMode = !isSignupMode;
-            document.getElementById('form-title').innerText = isSignupMode ? 'Create Arzo Account' : 'Arzo Messenger';
-            document.getElementById('toggle-text').innerText = isSignupMode ? 'Already have an account? Login' : 'New to Arzo? Create an account';
-            document.querySelector('.auth-btn').innerText = isSignupMode ? 'Sign Up' : 'Login';
-        }
-
-        async function handleAuth() {
-            const username = document.getElementById('username').value.trim();
-            const password = document.getElementById('password').value.trim();
-            const errorEl = document.getElementById('auth-error');
-
-            if (!username || !password) {
-                errorEl.innerText = 'Please fill in all fields';
-                return;
-            }
-
-            const endpoint = isSignupMode ? '/api/signup' : '/api/login';
-            try {
-                const res = await fetch(endpoint, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
-                });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    errorEl.innerText = data.error || 'Authentication failed';
-                    return;
-                }
-
-                if (isSignupMode) {
-                    alert(data.message);
-                    toggleAuthMode();
-                } else {
-                    currentUser = data.username;
-                    document.getElementById('auth-container').style.display = 'none';
-                    document.getElementById('chat-container').style.display = 'flex';
-                    document.getElementById('current-user-display').innerText = currentUser;
-                    initSocket();
-                }
-            } catch (err) {
-                errorEl.innerText = 'Server error occurred';
-            }
-        }
-
-        function initSocket() {
-            socket = io();
-
-            socket.on('connect', () => {
-                socket.emit('join', currentUser);
-            });
-
-            socket.on('online-users', (users) => {
-                const userListEl = document.getElementById('user-list');
-                userListEl.innerHTML = '';
-                
-                const otherUsers = users.filter(user => user !== currentUser);
-                if (otherUsers.length === 0) {
-                    userListEl.innerHTML = '<p style="padding: 15px; color: #888; font-size: 13px; text-align: center;">No other users online</p>';
-                    return;
-                }
-
-                otherUsers.forEach(user => {
-                    if (!messagesStore[user]) messagesStore[user] = [];
-                    const div = document.createElement('div');
-                    div.className = `user-item ${activeRecipient === user ? 'active' : ''}`;
-                    div.innerText = user;
-                    div.onclick = () => selectRecipient(user);
-                    userListEl.appendChild(div);
-                });
-            });
-
-            socket.on('privateMessage', (data) => {
-                const chatPartner = data.sender === currentUser ? activeRecipient : data.sender;
-                if (!chatPartner) return;
-                
-                if (!messagesStore[chatPartner]) messagesStore[chatPartner] = [];
-                messagesStore[chatPartner].push(data);
-
-                if (activeRecipient === chatPartner) {
-                    renderMessages();
-                }
-            });
-        }
-
-        function selectRecipient(user) {
-            activeRecipient = user;
-            document.getElementById('current-chat-title').innerText = `Chat with ${user}`;
-            const msgInput = document.getElementById('message-input');
-            const sendBtn = document.getElementById('send-btn');
-            
-            msgInput.disabled = false;
-            sendBtn.disabled = false;
-            msgInput.focus();
-            
-            document.querySelectorAll('.user-item').forEach(el => {
-                el.classList.toggle('active', el.innerText === user);
-            });
-
-            renderMessages();
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('message-input');
-            const message = input.value.trim();
-            if (!message || !activeRecipient) return;
-
-            socket.emit('privateMessage', {
-                recipient: activeRecipient,
-                message: message,
-                sender: currentUser
-            });
-
-            input.value = '';
-        }
-
-        function renderMessages() {
-            const messagesEl = document.getElementById('messages');
-            messagesEl.innerHTML = '';
-            if (!activeRecipient || !messagesStore[activeRecipient]) return;
-
-            messagesStore[activeRecipient].forEach(msg => {
-                const div = document.createElement('div');
-                div.className = `message ${msg.sender === currentUser ? 'sent' : 'received'}`;
-                div.innerHTML = `${msg.message} <br><small style="font-size:10px; color:#666; float:right; margin-left:10px; margin-top:4px;">${msg.timestamp}</small>`;
-                messagesEl.appendChild(div);
-            });
-            messagesEl.scrollTop = messagesEl.scrollHeight;
-        }
-
-        document.getElementById('message-input').addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') sendMessage();
-        });
-    </script>
+    <script src="client.js"></script>
 </body>
 </html>

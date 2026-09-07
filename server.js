@@ -1,84 +1,55 @@
-const express = require('express');
-const http = require('http');
-const { Server } = require('socket.io');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
-const app = express();
-const server = http.createServer(app);
-const io = new Server(server);
+// Static folder enable karein taaki uploaded images browser par dikh sakein
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const SECRET_KEY = 'arzo_super_secret_key';
-const users = {}; // In-memory DB for registered users
-const onlineUsers = {}; // Map username -> socket.id
-
-app.use(express.json());
-app.use(express.static('public'));
-
-// Signup Route
-app.post('/api/signup', async (req, res) => {
-    const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
-    if (users[username]) return res.status(400).json({ error: 'Username already exists' });
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    users[username] = { password: hashedPassword };
-
-    res.json({ message: 'Welcome to Arzo! Account created successfully.' });
+// Multer storage configuration
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        const uploadDir = path.join(__dirname, 'uploads');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir);
+        }
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + '-' + file.originalname);
+    }
 });
 
-// Login Route
-app.post('/api/login', async (req, res) => {
-    const { username, password } = req.body;
-    const user = users[username];
+const upload = multer({ storage: storage });
 
-    if (!user) return res.status(400).json({ error: 'User not found in Arzo' });
-
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) return res.status(400).json({ error: 'Invalid password' });
-
-    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: '24h' });
-    res.json({ token, username });
-});
-
-// WebSocket Logic for Private Chat
-io.on('connection', (socket) => {
-    console.log('A user connected:', socket.id);
-
-    // User joins with their username
-    socket.on('join', (username) => {
-        if (username) {
-            onlineUsers[username] = socket.id;
-            socket.username = username;
-            // Broadcast updated online users list to everyone
-            io.emit('online-users', Object.keys(onlineUsers));
+// Image Upload API Endpoint
+app.post('/api/upload', upload.single('image'), (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
         }
-    });
 
-    // Handle Private/Direct Messages
-    socket.on('privateMessage', ({ recipient, message, sender }) => {
-        const recipientSocketId = onlineUsers[recipient];
-        const messageData = { sender, message, timestamp: new Date().toLocaleTimeString() };
+        const imageUrl = `/uploads/${req.file.filename}`;
+        const { sender, recipient } = req.body;
+        const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        if (recipientSocketId) {
-            // Send to recipient
-            io.to(recipientSocketId).emit('privateMessage', messageData);
+        const messageData = {
+            sender,
+            recipient,
+            message: `<img src="${imageUrl}" style="max-width: 250px; border-radius: 8px; display: block; margin-top: 5px;">`,
+            timestamp
+        };
+
+        // Recipient ko live image bhejien agar online hai
+        if (userSockets && userSockets[recipient]) {
+            io.to(userSockets[recipient]).emit('privateMessage', messageData);
         }
-        // Also send back to sender so it shows in their chat window
-        socket.emit('privateMessage', messageData);
-    });
-
-    // Handle Disconnect
-    socket.on('disconnect', () => {
-        if (socket.username && onlineUsers[socket.username]) {
-            delete onlineUsers[socket.username];
-            io.emit('online-users', Object.keys(onlineUsers));
+        // Sender ko bhi wapas bhejien taaki chat box mein show ho
+        if (userSockets && userSockets[sender]) {
+            io.to(userSockets[sender]).emit('privateMessage', messageData);
         }
-        console.log('User disconnected:', socket.id);
-    });
-});
 
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-    console.log(`Arzo Server running on http://localhost:${PORT}`);
+        res.status(200).json({ success: true, imageUrl });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
