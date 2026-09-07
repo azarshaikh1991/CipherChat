@@ -1,4 +1,3 @@
-// server.js
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -71,7 +70,7 @@ app.post('/api/upload', upload.single('image'), (req, res) => {
         const messageData = {
             sender,
             recipient,
-            message: `<img src="${imageUrl}" style="max-width: 250px; border-radius: 8px; display: block; margin-top: 5px;">`,
+            message: `<a href="${imageUrl}" target="_blank"><img src="${imageUrl}" style="max-width: 200px; border-radius: 8px; display: block; margin-top: 5px; cursor: pointer;"></a>`,
             timestamp
         };
 
