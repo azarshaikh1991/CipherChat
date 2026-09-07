@@ -11,45 +11,56 @@
     <!-- Login / Signup Screen -->
     <div id="login-screen" class="login-container">
         <div class="login-box">
-            <h2>Arzo Messenger</h2>
+            <h2>ARZO Messenger</h2>
             <input type="text" id="username-input" placeholder="Username" autocomplete="off">
             <input type="password" id="password-input" placeholder="Password">
-            <div class="login-actions" style="display: flex; gap: 10px; margin-top: 15px;">
-                <button onclick="login()" class="login-btn" style="flex: 1; padding: 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer;">Login</button>
-                <button onclick="registerAccount()" class="register-btn" style="flex: 1; padding: 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">Sign Up</button>
+            <div class="login-actions">
+                <button onclick="login()" class="login-btn">Login</button>
+                <button onclick="registerAccount()" class="register-btn">Sign Up</button>
             </div>
         </div>
     </div>
 
     <!-- Messenger Main Container (Initially Hidden) -->
-    <div class="messenger-container" id="messenger-container" style="display: none;">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <span id="current-username"></span>
-                <button onclick="logout()" class="logout-btn">Logout</button>
-            </div>
-            <div class="user-list" id="user-list">
-                <!-- Dynamic user list -->
-            </div>
-        </div>
-
-        <!-- Chat Section -->
-        <div class="chat-section">
-            <div class="chat-header">
-                <h3 id="current-chat-title">Select a user to start chat</h3>
-            </div>
-            
-            <div class="chat-messages" id="chat-messages">
-                <!-- Messages will appear here -->
+    <div class="app-wrapper" id="messenger-container" style="display: none;">
+        <div class="messenger-card">
+            <!-- Header -->
+            <div class="app-header">
+                <div class="brand-title">ARZO</div>
+                <div class="user-controls">
+                    <span id="current-username-display">Hello, user!</span>
+                    <button onclick="logout()" class="logout-btn">Logout</button>
+                </div>
             </div>
 
-            <div class="chat-input-area" id="chat-input-area" style="display: none;">
-                <label for="image-input" class="upload-btn-label" title="Send Image">📎</label>
-                <input type="file" id="image-input" accept="image/*" style="display: none;" onchange="sendImage(event)">
-                
-                <input type="text" id="message-input" placeholder="Type a message...">
-                <button class="send-btn" onclick="sendMessage()">➤</button>
+            <!-- Body Layout: Sidebar + Chat Section -->
+            <div class="app-body">
+                <!-- Active/Inactive Users Sidebar -->
+                <div class="users-sidebar">
+                    <h4>Chats</h4>
+                    <div class="user-list" id="user-list">
+                        <!-- Dynamic users -->
+                    </div>
+                </div>
+
+                <!-- Chat Section -->
+                <div class="chat-section">
+                    <div class="chat-header-bar">
+                        <h3 id="current-chat-title">Select a user to start chat</h3>
+                    </div>
+                    
+                    <div class="chat-messages" id="chat-messages">
+                        <!-- Messages -->
+                    </div>
+
+                    <div class="chat-input-area" id="chat-input-area" style="display: none;">
+                        <label for="image-input" class="upload-btn-label" title="Send Image">📎</label>
+                        <input type="file" id="image-input" accept="image/*" style="display: none;" onchange="sendImage(event)">
+                        
+                        <input type="text" id="message-input" placeholder="Type a message to Arzo room...">
+                        <button class="send-btn" onclick="sendMessage()">Send</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

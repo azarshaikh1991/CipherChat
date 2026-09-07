@@ -1,10 +1,12 @@
-/* public/style.css */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f4f7f6;
+    background-color: #e0f2f1;
     height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
 }
 
@@ -14,21 +16,22 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: #f4f7f6;
+    width: 100vw;
+    background: #e0f2f1;
 }
 
 .login-box {
     background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
     text-align: center;
-    width: 320px;
+    width: 340px;
 }
 
 .login-box h2 {
     margin-bottom: 20px;
-    color: #333;
+    color: #00695c;
 }
 
 .login-box input {
@@ -36,49 +39,127 @@ body {
     padding: 12px;
     margin: 10px 0;
     border: 1px solid #ccc;
-    border-radius: 5px;
+    border-radius: 6px;
     outline: none;
     box-sizing: border-box;
 }
 
-/* Messenger Main Layout */
-.messenger-container {
+.login-actions {
     display: flex;
-    height: 100vh;
-    width: 100vw;
+    gap: 10px;
+    margin-top: 15px;
 }
 
-/* Sidebar */
-.sidebar {
-    width: 300px;
-    background: #ffffff;
+.login-btn {
+    flex: 1;
+    padding: 10px;
+    background: #00695c;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.login-btn:hover {
+    background: #004d40;
+}
+
+.register-btn {
+    flex: 1;
+    padding: 10px;
+    background: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.register-btn:hover {
+    background: #1b5e20;
+}
+
+/* Main Card Layout matching your design */
+.app-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100vw;
+    height: 100vh;
+}
+
+.messenger-card {
+    width: 920px;
+    height: 600px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+/* Header */
+.app-header {
+    background: #00695c;
+    color: white;
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.brand-title {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.user-controls {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    font-size: 14px;
+}
+
+.logout-btn {
+    background: #d32f2f;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.logout-btn:hover {
+    background: #b71c1c;
+}
+
+/* App Body */
+.app-body {
+    display: flex;
+    flex: 1;
+    height: calc(100% - 60px);
+}
+
+/* Users Sidebar with Status */
+.users-sidebar {
+    width: 260px;
+    background: #f9f9f9;
     border-right: 1px solid #ddd;
     display: flex;
     flex-direction: column;
 }
 
-.sidebar-header {
-    padding: 15px 20px;
-    background: #007bff;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-weight: bold;
-}
-
-.logout-btn {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 12px;
-}
-
-.logout-btn:hover {
-    background: #c82333;
+.users-sidebar h4 {
+    margin: 0;
+    padding: 15px;
+    background: #f1f1f1;
+    color: #333;
+    font-size: 14px;
+    border-bottom: 1px solid #ddd;
 }
 
 .user-list {
@@ -90,11 +171,22 @@ body {
     padding: 12px 15px;
     cursor: pointer;
     border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 14px;
     transition: background 0.2s;
 }
 
 .user-item:hover {
-    background: #f1f1f1;
+    background: #eceff1;
+}
+
+.status-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background-color: #4caf50; /* Active green */
 }
 
 /* Chat Section */
@@ -102,30 +194,31 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
-    background: #e5ddd5;
+    background: #ffffff;
 }
 
-.chat-header {
-    padding: 15px 20px;
-    background: #ffffff;
+.chat-header-bar {
+    padding: 12px 20px;
+    background: #f5f5f5;
     border-bottom: 1px solid #ddd;
 }
 
-.chat-header h3 {
+.chat-header-bar h3 {
     margin: 0;
+    font-size: 15px;
     color: #333;
-    font-size: 18px;
 }
 
 .chat-messages {
     flex: 1;
     padding: 20px;
     overflow-y: auto;
+    background: #fafafa;
 }
 
 .chat-input-area {
     padding: 12px 20px;
-    background: #f0f0f0;
+    background: #ffffff;
     display: flex;
     align-items: center;
     gap: 12px;
@@ -134,39 +227,32 @@ body {
 
 .chat-input-area input[type="text"] {
     flex: 1;
-    padding: 12px 15px;
+    padding: 10px 15px;
     border: 1px solid #ccc;
-    border-radius: 20px;
+    border-radius: 6px;
     outline: none;
-    background: #fff;
 }
 
-.send-btn, .upload-btn-label {
-    background: #007bff;
+.send-btn {
+    background: #00695c;
     color: white;
     border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+    padding: 10px 20px;
+    border-radius: 6px;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
+    font-weight: bold;
 }
 
 .send-btn:hover {
-    background: #0056b3;
+    background: #004d40;
 }
 
 .upload-btn-label {
-    background: transparent;
+    cursor: pointer;
+    font-size: 20px;
     color: #555;
-    font-size: 24px;
-    width: auto;
-    height: auto;
 }
 
 .upload-btn-label:hover {
-    color: #007bff;
+    color: #00695c;
 }
