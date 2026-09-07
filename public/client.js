@@ -92,7 +92,46 @@ function selectUser(user) {
     activeRecipient = user;
     document.getElementById('current-chat-title').innerText = `Chat with ${user}`;
     document.getElementById('chat-input-area').style.display = 'flex';
+    document.getElementById('chat-header-actions').style.display = 'flex';
     document.getElementById('chat-messages').innerHTML = '';
+}
+
+function downloadCurrentChatImage() {
+    const chatMessages = document.getElementById('chat-messages');
+    const images = chatMessages.querySelectorAll('img');
+    
+    if (images.length === 0) {
+        alert('No images found in this chat.');
+        return;
+    }
+    
+    const latestImage = images[images.length - 1];
+    triggerDownload(latestImage.src);
+}
+
+function downloadAllChatImages() {
+    const chatMessages = document.getElementById('chat-messages');
+    const images = chatMessages.querySelectorAll('img');
+    
+    if (images.length === 0) {
+        alert('No images found in this chat.');
+        return;
+    }
+    
+    images.forEach((img, index) => {
+        setTimeout(() => {
+            triggerDownload(img.src);
+        }, index * 300);
+    });
+}
+
+function triggerDownload(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = url.split('/').pop() || 'downloaded-image.jpg';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
 function sendMessage() {

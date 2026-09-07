@@ -45,8 +45,12 @@
 
                 <!-- Chat Section -->
                 <div class="chat-section">
-                    <div class="chat-header-bar">
+                    <div class="chat-header-bar" style="display: flex; justify-content: space-between; align-items: center;">
                         <h3 id="current-chat-title">Select a user to start chat</h3>
+                        <div id="chat-header-actions" style="display: none; gap: 8px;">
+                            <button onclick="downloadCurrentChatImage()" style="background: #00695c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Download</button>
+                            <button onclick="downloadAllChatImages()" style="background: #004d40; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold;">Download All</button>
+                        </div>
                     </div>
                     
                     <div class="chat-messages" id="chat-messages">
