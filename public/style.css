@@ -18,6 +18,7 @@ body {
     height: 100vh;
     width: 100vw;
     background: #e0f2f1;
+    position: relative;
 }
 
 .login-box {
@@ -80,7 +81,18 @@ body {
     background: #1b5e20;
 }
 
-/* Main Card Layout matching your design */
+/* Creator Credit Footer Style */
+.creator-credit {
+    position: absolute;
+    bottom: 25px;
+    color: rgba(0, 105, 92, 0.45);
+    font-size: 13px;
+    letter-spacing: 0.8px;
+    font-weight: 500;
+    pointer-events: none;
+}
+
+/* Main Card Layout */
 .app-wrapper {
     display: flex;
     justify-content: center;
@@ -186,7 +198,7 @@ body {
     width: 9px;
     height: 9px;
     border-radius: 50%;
-    background-color: #4caf50; /* Active green */
+    background-color: #4caf50;
 }
 
 /* Chat Section */

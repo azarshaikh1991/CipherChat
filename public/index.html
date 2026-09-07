@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arzo Messenger</title>
+    <title>CipherChat</title>
     <link rel="stylesheet" href="style.css">
     <script src="/socket.io/socket.io.js"></script>
 </head>
@@ -11,7 +11,7 @@
     <!-- Login / Signup Screen -->
     <div id="login-screen" class="login-container">
         <div class="login-box">
-            <h2>ARZO Messenger</h2>
+            <h2>CipherChat</h2>
             <input type="text" id="username-input" placeholder="Username" autocomplete="off">
             <input type="password" id="password-input" placeholder="Password">
             <div class="login-actions">
@@ -19,6 +19,8 @@
                 <button id="register-btn" class="register-btn">Sign Up</button>
             </div>
         </div>
+        <!-- Developer Credit Tag -->
+        <div class="creator-credit">Created by Azar</div>
     </div>
 
     <!-- Messenger Main Container (Initially Hidden) -->
@@ -26,7 +28,7 @@
         <div class="messenger-card">
             <!-- Header -->
             <div class="app-header">
-                <div class="brand-title">ARZO</div>
+                <div class="brand-title">CipherChat</div>
                 <div class="user-controls">
                     <span id="current-username-display">Hello, user!</span>
                     <button id="logout-btn" class="logout-btn">Logout</button>
