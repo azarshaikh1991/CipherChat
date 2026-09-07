@@ -15,8 +15,8 @@
             <input type="text" id="username-input" placeholder="Username" autocomplete="off">
             <input type="password" id="password-input" placeholder="Password">
             <div class="login-actions">
-                <button onclick="login()" class="login-btn">Login</button>
-                <button onclick="registerAccount()" class="register-btn">Sign Up</button>
+                <button id="login-btn" class="login-btn">Login</button>
+                <button id="register-btn" class="register-btn">Sign Up</button>
             </div>
         </div>
     </div>
@@ -29,7 +29,7 @@
                 <div class="brand-title">ARZO</div>
                 <div class="user-controls">
                     <span id="current-username-display">Hello, user!</span>
-                    <button onclick="logout()" class="logout-btn">Logout</button>
+                    <button id="logout-btn" class="logout-btn">Logout</button>
                 </div>
             </div>
 
@@ -57,8 +57,8 @@
                         <label for="image-input" class="upload-btn-label" title="Send Image">📎</label>
                         <input type="file" id="image-input" accept="image/*" style="display: none;" onchange="sendImage(event)">
                         
-                        <input type="text" id="message-input" placeholder="Type a message to Arzo room...">
-                        <button class="send-btn" onclick="sendMessage()">Send</button>
+                        <input type="text" id="message-input" placeholder="Type a message...">
+                        <button id="send-msg-btn" class="send-btn">Send</button>
                     </div>
                 </div>
             </div>
