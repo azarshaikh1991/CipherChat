@@ -1,7 +1,7 @@
 const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 const app = express();
@@ -9,7 +9,8 @@ const server = http.createServer(app);
 const io = new Server(server);
 
 const SECRET_KEY = 'arzo_super_secret_key';
-const users = {}; // In-memory DB
+const users = {}; // In-memory DB for registered users
+const onlineUsers = {}; // Map username -> socket.id
 
 app.use(express.json());
 app.use(express.static('public'));
@@ -40,10 +41,40 @@ app.post('/api/login', async (req, res) => {
     res.json({ token, username });
 });
 
-// WebSocket Logic for Arzo
+// WebSocket Logic for Private Chat
 io.on('connection', (socket) => {
-    socket.on('chatMessage', (data) => {
-        io.emit('message', data);
+    console.log('A user connected:', socket.id);
+
+    // User joins with their username
+    socket.on('join', (username) => {
+        if (username) {
+            onlineUsers[username] = socket.id;
+            socket.username = username;
+            // Broadcast updated online users list to everyone
+            io.emit('online-users', Object.keys(onlineUsers));
+        }
+    });
+
+    // Handle Private/Direct Messages
+    socket.on('privateMessage', ({ recipient, message, sender }) => {
+        const recipientSocketId = onlineUsers[recipient];
+        const messageData = { sender, message, timestamp: new Date().toLocaleTimeString() };
+
+        if (recipientSocketId) {
+            // Send to recipient
+            io.to(recipientSocketId).emit('privateMessage', messageData);
+        }
+        // Also send back to sender so it shows in their chat window
+        socket.emit('privateMessage', messageData);
+    });
+
+    // Handle Disconnect
+    socket.on('disconnect', () => {
+        if (socket.username && onlineUsers[socket.username]) {
+            delete onlineUsers[socket.username];
+            io.emit('online-users', Object.keys(onlineUsers));
+        }
+        console.log('User disconnected:', socket.id);
     });
 });
 
