@@ -96,6 +96,58 @@ node {
             '''
         }
     } finally {
+        sh '''
+            export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Docker.app/Contents/Resources/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+            docker rmi ''' + "${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}" + ''' || true
+        '''
+        echo 'Arzo App deployment pipeline finished successfully! Access it on http://localhost:3000'
+    }
+}node {
+    def DOCKER_HUB_CREDS = 'docker-hub-credentials'
+    def DOCKER_HUB_USER  = 'azarr1991'
+    def IMAGE_NAME       = 'arzo-messenger'
+    def IMAGE_TAG        = "${env.BUILD_NUMBER}"
+
+    try {
+        stage('Checkout') {
+            checkout scm
+        }
+
+        stage('Install Dependencies') {
+            sh '''
+                export PATH="/Users/azarshaikh/.nvm/versions/node/v24.19.0/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/bin:/bin:/usr/sbin:/sbin"
+                npm install
+            '''
+        }
+
+        stage('Build Docker Image') {
+            echo 'Building Arzo Image...'
+            sh '''
+                export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Docker.app/Contents/Resources/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+                docker build -t ''' + "${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}" + ''' .
+                docker tag ''' + "${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG} ${DOCKER_HUB_USER}/${IMAGE_NAME}:latest" + '''
+            '''
+        }
+
+        stage('Push to Docker Hub') {
+            withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDS, usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                sh '''
+                    export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Docker.app/Contents/Resources/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+                    echo "$PASS" | docker login -u "$USER" --password-stdin
+                    docker push ''' + "${DOCKER_HUB_USER}/${IMAGE_NAME}:${IMAGE_TAG}" + '''
+                    docker push ''' + "${DOCKER_HUB_USER}/${IMAGE_NAME}:latest" + '''
+                '''
+            }
+        }
+
+        stage('Deploy Arzo') {
+            sh '''
+                export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Docker.app/Contents/Resources/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+                docker compose down || true
+                docker compose up -d
+            '''
+        }
+    } finally {
         // Sabhi finally clean-up tasks ab node block ke andar hain
         sh '''
             export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/Applications/Docker.app/Contents/Resources/bin:/usr/bin:/bin:/usr/sbin:/sbin"
